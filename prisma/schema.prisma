@@ -1,0 +1,59 @@
+// This is your Prisma schema file
+
+// Prisma Client configuration
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Database connection
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with magic link authentication
+model User {
+  id                String         @id @default(uuid())
+  email             String         @unique
+  magicToken        String?        @map("magic_token")
+  magicTokenExpires DateTime?      @map("magic_token_expires")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  
+  // Relations
+  voiceProfile      VoiceProfile?
+  rewriteEvents     RewriteEvent[]
+
+  @@map("users")
+}
+
+// Voice profile storing writing samples and analysis
+model VoiceProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  samples     Json     @default("[]")
+  profileData Json?    @map("profile_data")
+  summaryText String?  @map("summary_text")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("voice_profiles")
+}
+
+// Rewrite events for feedback loop
+model RewriteEvent {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  originalText   String   @map("original_text")
+  rewrittenText  String   @map("rewritten_text")
+  userAction     String?  @map("user_action")
+  userEditedText String?  @map("user_edited_text")
+  modelUsed      String?  @map("model_used")
+  createdAt      DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("rewrite_events")
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orate</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Auth State -->
+    <div id="auth-view" class="view">
+      <div class="header">
+        <h1>Orate</h1>
+        <p class="tagline">Rewrite it like you, on a good day.</p>
+      </div>
+      
+      <div class="auth-form">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" required>
+        </div>
+        <button id="signin-btn" class="btn-primary">Send Magic Link</button>
+        <div id="auth-message" class="message"></div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-view" class="view hidden">
+      <div class="spinner"></div>
+      <p>Sending magic link...</p>
+    </div>
+
+    <!-- Authenticated State -->
+    <div id="main-view" class="view hidden">
+      <div class="header">
+        <h1>Orate</h1>
+        <p id="user-email" class="email"></p>
+      </div>
+
+      <div id="profile-section" class="section">
+        <div id="no-profile" class="status-message">
+          <p>No voice profile yet.</p>
+          <a href="#" id="goto-onboarding" class="link">Create your voice profile →</a>
+        </div>
+        
+        <div id="has-profile" class="hidden">
+          <div class="profile-summary">
+            <h3>Your Voice Profile</h3>
+            <p id="profile-summary-text"></p>
+            <p class="meta" id="profile-meta"></p>
+          </div>
+          
+          <div class="actions">
+            <button id="add-samples-btn" class="btn-secondary">Add Samples</button>
+            <button id="rebuild-profile-btn" class="btn-secondary">Rebuild Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="selection-section" class="section">
+        <h3>How to Use</h3>
+        <ol class="instructions">
+          <li>Select text on any webpage</li>
+          <li>Click the Orate icon or press <kbd>Ctrl+Shift+O</kbd></li>
+          <li>Review and accept your voice-matched rewrite</li>
+        </ol>
+      </div>
+
+      <div class="footer">
+        <button id="logout-btn" class="btn-text">Sign Out</button>
+        <a href="#" id="export-data" class="btn-text">Export Data</a>
+        <a href="#" id="delete-account" class="btn-text danger">Delete Account</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
