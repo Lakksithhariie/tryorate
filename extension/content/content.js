@@ -1,5 +1,5 @@
 // content.js - Content script for text selection and rewrite panel
-const API_BASE_URL = 'https://your-vercel-app.vercel.app/api'; // Change to your Vercel URL
+const API_BASE_URL = 'https://tryorate.vercel.app/api'; // Change to your Vercel URL
 
 // State
 let authToken = null;
