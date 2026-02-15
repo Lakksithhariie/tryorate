@@ -1,0 +1,212 @@
+/* Orate Panel Styles */
+#orate-panel {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  width: 380px;
+  max-height: 500px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: orate-slide-in 0.2s ease-out;
+}
+
+@keyframes orate-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.orate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #6C63FF 0%, #5A52E0 100%);
+  color: white;
+}
+
+.orate-logo {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.orate-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.orate-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.orate-content {
+  padding: 16px;
+}
+
+/* Loading State */
+.orate-loading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.orate-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #6C63FF;
+  border-radius: 50%;
+  animation: orate-spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes orate-spin {
+  to { transform: rotate(360deg); }
+}
+
+.orate-loading p {
+  color: #6B7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Result State */
+.orate-diff {
+  background: #FAFAF9;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1A1A2E;
+}
+
+.orate-rewritten {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.orate-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.orate-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.orate-accept {
+  background: #10B981;
+  color: white;
+}
+
+.orate-accept:hover {
+  background: #059669;
+}
+
+.orate-edit {
+  background: #F3F4F6;
+  color: #1A1A2E;
+}
+
+.orate-edit:hover {
+  background: #E5E7EB;
+}
+
+.orate-reject {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.orate-reject:hover {
+  background: #FECACA;
+}
+
+.orate-retry {
+  background: #6C63FF;
+  color: white;
+}
+
+.orate-retry:hover {
+  background: #5A52E0;
+}
+
+.orate-save-edit {
+  background: #10B981;
+  color: white;
+}
+
+.orate-save-edit:hover {
+  background: #059669;
+}
+
+.orate-cancel-edit {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+.orate-cancel-edit:hover {
+  background: #E5E7EB;
+}
+
+/* Error State */
+.orate-error {
+  text-align: center;
+  padding: 20px;
+}
+
+.orate-error-message {
+  color: #DC2626;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Edit Textarea */
+.orate-edit-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 2px solid #6C63FF;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+}
+
+.orate-edit-textarea:focus {
+  border-color: #5A52E0;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+}
+
+/* Utility */
+.hidden {
+  display: none !important;
+}

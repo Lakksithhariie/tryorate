@@ -12,7 +12,7 @@ pnpm-lock.yaml
 # Build outputs
 .vercel/
 .next/
-dist/
+# dist/ is now used for extension build
 build/
 *.tsbuildinfo
 
