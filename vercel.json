@@ -12,8 +12,12 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/welcome",
+      "destination": "/welcome.html"
+    },
+    {
       "source": "/",
-      "destination": "/api/health.js"
+      "destination": "/index.html"
     }
   ],
   "headers": [
