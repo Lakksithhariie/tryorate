@@ -3,7 +3,7 @@ import { z } from 'zod';
 import prisma from '../../lib/db.js';
 import { generateMagicToken } from '../../lib/auth.js';
 import { sendMagicLinkEmail } from '../../lib/email.js';
-import { cors, withErrorHandler, withRateLimit, parseBody } from '../../lib/middleware.js';
+import { cors, withErrorHandler, parseBody } from '../../lib/middleware.js';
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
@@ -14,33 +14,59 @@ async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed', message: 'Only POST requests are accepted' });
   }
 
-  const body = await parseBody(req);
-  const { email } = schema.parse(body);
+  try {
+    const body = await parseBody(req);
+    const { email } = schema.parse(body);
 
-  // Generate magic token
-  const { token, expiresAt } = generateMagicToken();
+    console.log(`[Magic Link] Processing request for: ${email}`);
 
-  // Upsert user with magic token
-  await prisma.user.upsert({
-    where: { email },
-    update: {
-      magicToken: token,
-      magicTokenExpires: expiresAt,
-    },
-    create: {
+    // Generate magic token
+    const { token, expiresAt } = generateMagicToken();
+    console.log(`[Magic Link] Generated token for: ${email}`);
+
+    // Upsert user with magic token
+    try {
+      await prisma.user.upsert({
+        where: { email },
+        update: {
+          magicToken: token,
+          magicTokenExpires: expiresAt,
+        },
+        create: {
+          email,
+          magicToken: token,
+          magicTokenExpires: expiresAt,
+        },
+      });
+      console.log(`[Magic Link] User upserted: ${email}`);
+    } catch (dbError) {
+      console.error(`[Magic Link] Database error:`, dbError);
+      return res.status(500).json({
+        error: 'Database Error',
+        message: 'Failed to save user data. Please try again.',
+      });
+    }
+
+    // Send email
+    try {
+      await sendMagicLinkEmail(email, token);
+      console.log(`[Magic Link] Email sent to: ${email}`);
+    } catch (emailError) {
+      console.error(`[Magic Link] Email error:`, emailError);
+      return res.status(500).json({
+        error: 'Email Error',
+        message: 'Failed to send email. Please check your email address and try again.',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Magic link sent to your email',
       email,
-      magicToken: token,
-      magicTokenExpires: expiresAt,
-    },
-  });
-
-  // Send email
-  await sendMagicLinkEmail(email, token);
-
-  return res.status(200).json({
-    message: 'Magic link sent to your email',
-    email,
-  });
+    });
+  } catch (error) {
+    console.error(`[Magic Link] Unexpected error:`, error);
+    throw error;
+  }
 }
 
-export default cors(withRateLimit(withErrorHandler(handler), { requests: 5, window: '1 h' }));
+export default cors(withErrorHandler(handler));
