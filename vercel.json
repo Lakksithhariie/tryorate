@@ -1,11 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": null,
-  "devCommand": null,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
   "framework": null,
-  "installCommand": "npm install && npx prisma generate",
-  "outputDirectory": null,
+  "installCommand": "npm install",
+  "outputDirectory": "public",
   "functions": {
     "api/**/*.js": {
       "maxDuration": 10
