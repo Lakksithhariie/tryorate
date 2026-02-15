@@ -1,212 +1,414 @@
-/* Orate Panel Styles */
+/* Orate Content Panel - Design System */
+:root {
+  --orate-surface: #FAFAF9;
+  --orate-surface-elevated: #FFFFFF;
+  --orate-text-primary: #1A1A2E;
+  --orate-text-secondary: #6B7280;
+  --orate-accent: #6C63FF;
+  --orate-accent-hover: #5A52E0;
+  --orate-accent-light: rgba(108, 99, 255, 0.1);
+  --orate-success: #10B981;
+  --orate-success-light: rgba(16, 185, 129, 0.15);
+  --orate-error: #EF4444;
+  --orate-warning: #F59E0B;
+  --orate-border: #E5E7EB;
+  --orate-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --orate-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --orate-radius: 12px;
+  --orate-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
 #orate-panel {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  width: 380px;
-  max-height: 500px;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  font-family: var(--orate-font-primary);
+  width: 420px;
+  max-height: 600px;
+  background: var(--orate-surface-elevated);
+  border: 1px solid var(--orate-border);
+  border-radius: var(--orate-radius);
+  box-shadow: var(--orate-shadow);
   overflow: hidden;
-  animation: orate-slide-in 0.2s ease-out;
+  animation: orate-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: fixed;
+  z-index: 999999;
 }
 
 @keyframes orate-slide-in {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
+/* Header */
 .orate-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #6C63FF 0%, #5A52E0 100%);
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--orate-accent) 0%, var(--orate-accent-hover) 100%);
   color: white;
+}
+
+.orate-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .orate-logo {
   font-weight: 700;
   font-size: 16px;
+  letter-spacing: -0.3px;
+}
+
+.orate-status {
+  font-size: 11px;
+  opacity: 0.9;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
 }
 
 .orate-close {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: background 0.2s;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  line-height: 1;
 }
 
 .orate-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
+/* Content Area */
 .orate-content {
-  padding: 16px;
+  padding: 18px;
+  max-height: 480px;
+  overflow-y: auto;
 }
 
 /* Loading State */
 .orate-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
   text-align: center;
-  padding: 40px 20px;
 }
 
 .orate-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #E5E7EB;
-  border-top-color: #6C63FF;
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--orate-border);
+  border-top-color: var(--orate-accent);
   border-radius: 50%;
   animation: orate-spin 0.8s linear infinite;
-  margin: 0 auto 16px;
+  margin-bottom: 16px;
 }
 
 @keyframes orate-spin {
   to { transform: rotate(360deg); }
 }
 
-.orate-loading p {
-  color: #6B7280;
-  font-size: 14px;
-  margin: 0;
+.orate-loading-text {
+  color: var(--orate-text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.orate-loading-subtext {
+  color: var(--orate-text-secondary);
+  font-size: 13px;
 }
 
 /* Result State */
-.orate-diff {
-  background: #FAFAF9;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  max-height: 200px;
-  overflow-y: auto;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #1A1A2E;
+.orate-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.orate-rewritten {
+.orate-result-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--orate-text-secondary);
+}
+
+.orate-model-badge {
+  font-size: 11px;
+  color: var(--orate-accent);
+  background: var(--orate-accent-light);
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* Diff View (PRD Spec) */
+.orate-diff {
+  background: var(--orate-surface);
+  border: 1px solid var(--orate-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 18px;
+  max-height: 280px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--orate-text-primary);
+}
+
+.orate-diff-text {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
+/* Diff styling per PRD */
+.orate-removed {
+  color: var(--orate-accent);
+  text-decoration: line-through;
+  background: rgba(108, 99, 255, 0.05);
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+.orate-added {
+  background: var(--orate-success-light);
+  color: var(--orate-success);
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+/* Original text section */
+.orate-original-section {
+  margin-bottom: 16px;
+}
+
+.orate-original-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--orate-text-secondary);
+  margin-bottom: 8px;
+}
+
+.orate-original-text {
+  background: #F3F4F6;
+  border: 1px solid var(--orate-border);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--orate-text-secondary);
+  line-height: 1.6;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+/* Actions */
 .orate-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .orate-btn {
   flex: 1;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--orate-font-primary);
   font-size: 14px;
   font-weight: 600;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 150ms ease;
+}
+
+.orate-btn:hover {
+  transform: translateY(-1px);
 }
 
 .orate-accept {
-  background: #10B981;
+  background: var(--orate-success);
   color: white;
 }
 
 .orate-accept:hover {
   background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .orate-edit {
-  background: #F3F4F6;
-  color: #1A1A2E;
+  background: var(--orate-surface);
+  color: var(--orate-text-primary);
+  border: 1px solid var(--orate-border);
 }
 
 .orate-edit:hover {
-  background: #E5E7EB;
+  background: #F3F4F6;
+  border-color: var(--orate-text-secondary);
 }
 
 .orate-reject {
-  background: #FEE2E2;
-  color: #DC2626;
+  background: transparent;
+  color: var(--orate-error);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .orate-reject:hover {
-  background: #FECACA;
+  background: rgba(239, 68, 68, 0.05);
+  border-color: var(--orate-error);
 }
 
-.orate-retry {
-  background: #6C63FF;
-  color: white;
+/* Edit Mode */
+.orate-edit-mode {
+  margin-bottom: 16px;
 }
 
-.orate-retry:hover {
-  background: #5A52E0;
+.orate-edit-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 14px;
+  font-family: var(--orate-font-primary);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--orate-text-primary);
+  background: var(--orate-surface);
+  border: 2px solid var(--orate-accent);
+  border-radius: 8px;
+  resize: vertical;
+  outline: none;
+  transition: box-shadow 150ms ease;
 }
 
-.orate-save-edit {
-  background: #10B981;
-  color: white;
+.orate-edit-textarea:focus {
+  box-shadow: 0 0 0 4px var(--orate-accent-light);
 }
 
-.orate-save-edit:hover {
-  background: #059669;
-}
-
-.orate-cancel-edit {
-  background: #F3F4F6;
-  color: #6B7280;
-}
-
-.orate-cancel-edit:hover {
-  background: #E5E7EB;
+.orate-edit-hint {
+  font-size: 12px;
+  color: var(--orate-text-secondary);
+  margin-top: 8px;
 }
 
 /* Error State */
 .orate-error {
   text-align: center;
-  padding: 20px;
+  padding: 40px 20px;
+}
+
+.orate-error-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: var(--orate-error);
+}
+
+.orate-error-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--orate-text-primary);
+  margin-bottom: 8px;
 }
 
 .orate-error-message {
-  color: #DC2626;
   font-size: 14px;
-  margin-bottom: 16px;
+  color: var(--orate-text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
 }
 
-/* Edit Textarea */
-.orate-edit-textarea {
-  width: 100%;
-  min-height: 120px;
-  padding: 12px;
-  border: 2px solid #6C63FF;
-  border-radius: 6px;
-  font-family: inherit;
+.orate-retry {
+  background: var(--orate-accent);
+  color: white;
+  padding: 0 24px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  font-family: var(--orate-font-primary);
   font-size: 14px;
-  line-height: 1.6;
-  resize: vertical;
-  outline: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
 }
 
-.orate-edit-textarea:focus {
-  border-color: #5A52E0;
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+.orate-retry:hover {
+  background: var(--orate-accent-hover);
 }
 
-/* Utility */
-.hidden {
+/* Success State */
+.orate-success {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.orate-success-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  color: var(--orate-success);
+}
+
+.orate-success-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--orate-text-primary);
+  margin-bottom: 8px;
+}
+
+.orate-success-text {
+  font-size: 14px;
+  color: var(--orate-text-secondary);
+}
+
+/* Hidden utility */
+.orate-hidden {
   display: none !important;
+}
+
+/* Scrollbar styling */
+.orate-diff::-webkit-scrollbar,
+.orate-original-text::-webkit-scrollbar,
+.orate-edit-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.orate-diff::-webkit-scrollbar-track,
+.orate-original-text::-webkit-scrollbar-track,
+.orate-edit-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.orate-diff::-webkit-scrollbar-thumb,
+.orate-original-text::-webkit-scrollbar-thumb,
+.orate-edit-textarea::-webkit-scrollbar-thumb {
+  background: var(--orate-border);
+  border-radius: 3px;
+}
+
+.orate-diff::-webkit-scrollbar-thumb:hover,
+.orate-original-text::-webkit-scrollbar-thumb:hover,
+.orate-edit-textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--orate-text-secondary);
 }

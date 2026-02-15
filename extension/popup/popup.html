@@ -4,73 +4,184 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div id="app">
-    <!-- Auth State -->
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Auth View -->
     <div id="auth-view" class="view">
-      <div class="header">
-        <h1>Orate</h1>
+      <div class="logo-section">
+        <div class="logo-mark">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="10" fill="#6C63FF"/>
+            <path d="M20 10C14.477 10 10 14.477 10 20C10 25.523 14.477 30 20 30C25.523 30 30 25.523 30 20C30 14.477 25.523 10 20 10ZM20 26C16.686 26 14 23.314 14 20C14 16.686 16.686 14 20 14C23.314 14 26 16.686 26 20C26 23.314 23.314 26 20 26Z" fill="white"/>
+          </svg>
+        </div>
+        <h1 class="logo-text">Orate</h1>
         <p class="tagline">Rewrite it like you, on a good day.</p>
       </div>
       
-      <div class="auth-form">
-        <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="you@example.com" required>
-        </div>
-        <button id="signin-btn" class="btn-primary">Send Magic Link</button>
-        <div id="auth-message" class="message"></div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div id="loading-view" class="view hidden">
-      <div class="spinner"></div>
-      <p>Sending magic link...</p>
-    </div>
-
-    <!-- Authenticated State -->
-    <div id="main-view" class="view hidden">
-      <div class="header">
-        <h1>Orate</h1>
-        <p id="user-email" class="email"></p>
-      </div>
-
-      <div id="profile-section" class="section">
-        <div id="no-profile" class="status-message">
-          <p>No voice profile yet.</p>
-          <a href="#" id="goto-onboarding" class="link">Create your voice profile →</a>
+      <div class="card auth-card">
+        <div class="form-group">
+          <label for="email" class="form-label">Email address</label>
+          <input 
+            type="email" 
+            id="email" 
+            class="form-input" 
+            placeholder="you@example.com"
+            autocomplete="email"
+          >
+          <span class="input-hint">We'll send you a magic link to sign in</span>
         </div>
         
-        <div id="has-profile" class="hidden">
-          <div class="profile-summary">
-            <h3>Your Voice Profile</h3>
-            <p id="profile-summary-text"></p>
-            <p class="meta" id="profile-meta"></p>
+        <button id="signin-btn" class="btn btn-primary btn-full">
+          <span class="btn-text">Send Magic Link</span>
+          <span class="btn-loader hidden"></span>
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        <p class="caption">Secure, passwordless authentication</p>
+      </div>
+    </div>
+
+    <!-- Loading View -->
+    <div id="loading-view" class="view hidden">
+      <div class="loading-state">
+        <div class="spinner-large"></div>
+        <p class="loading-text">Sending magic link...</p>
+        <p class="loading-subtext">Check your inbox</p>
+      </div>
+    </div>
+
+    <!-- Main Dashboard View -->
+    <div id="main-view" class="view hidden">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div class="header-left">
+          <div class="logo-mark-small">
+            <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="40" height="40" rx="10" fill="#6C63FF"/>
+              <path d="M20 10C14.477 10 10 14.477 10 20C10 25.523 14.477 30 20 30C25.523 30 30 25.523 30 20C30 14.477 25.523 10 20 10ZM20 26C16.686 26 14 23.314 14 20C14 16.686 16.686 14 20 14C23.314 14 26 16.686 26 20C26 23.314 23.314 26 20 26Z" fill="white"/>
+            </svg>
+          </div>
+          <div class="user-info">
+            <span id="user-email" class="user-email"></span>
+          </div>
+        </div>
+        <button id="logout-btn" class="btn-icon" title="Sign out">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Profile Status Card -->
+      <div id="profile-card" class="card profile-card">
+        <!-- No Profile State -->
+        <div id="no-profile-state" class="profile-state">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5">
+                <path d="M12 20h9M12 20V4M12 20H3M12 4h9M12 4H3M21 20V4M3 20V4"/>
+              </svg>
+            </div>
+            <h3 class="empty-title">Create your voice profile</h3>
+            <p class="empty-description">
+              Submit 3-10 writing samples totaling at least 1,500 words. 
+              We'll analyze your unique style.
+            </p>
+            <button id="goto-onboarding" class="btn btn-primary">
+              Get Started
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 6px;">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Has Profile State -->
+        <div id="has-profile-state" class="profile-state hidden">
+          <div class="profile-header">
+            <div class="profile-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Profile Active</span>
+            </div>
+            <span id="profile-meta" class="profile-meta"></span>
           </div>
           
-          <div class="actions">
-            <button id="add-samples-btn" class="btn-secondary">Add Samples</button>
-            <button id="rebuild-profile-btn" class="btn-secondary">Rebuild Profile</button>
+          <div class="profile-content">
+            <h3 class="profile-label">Your Writing Style</h3>
+            <p id="profile-summary-text" class="profile-summary"></p>
+          </div>
+          
+          <div class="profile-stats">
+            <div class="stat">
+              <span id="stat-samples" class="stat-value">0</span>
+              <span class="stat-label">Samples</span>
+            </div>
+            <div class="stat">
+              <span id="stat-words" class="stat-value">0</span>
+              <span class="stat-label">Words</span>
+            </div>
+          </div>
+          
+          <div class="profile-actions">
+            <button id="add-samples-btn" class="btn btn-secondary btn-sm">
+              Add Samples
+            </button>
+            <button id="rebuild-profile-btn" class="btn btn-secondary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+              Rebuild
+            </button>
           </div>
         </div>
       </div>
 
-      <div id="selection-section" class="section">
-        <h3>How to Use</h3>
-        <ol class="instructions">
-          <li>Select text on any webpage</li>
-          <li>Click the Orate icon or press <kbd>Ctrl+Shift+O</kbd></li>
-          <li>Review and accept your voice-matched rewrite</li>
+      <!-- How to Use Card -->
+      <div class="card usage-card">
+        <h3 class="card-title">How to Use</h3>
+        <ol class="usage-steps">
+          <li class="step">
+            <span class="step-number">1</span>
+            <span class="step-text">Select text on any webpage</span>
+          </li>
+          <li class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">Press <kbd class="key-shortcut">Ctrl</kbd><kbd class="key-shortcut">Shift</kbd><kbd class="key-shortcut">O</kbd></span>
+          </li>
+          <li class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">Review and accept your rewrite</span>
+          </li>
         </ol>
       </div>
 
-      <div class="footer">
-        <button id="logout-btn" class="btn-text">Sign Out</button>
-        <a href="#" id="export-data" class="btn-text">Export Data</a>
-        <a href="#" id="delete-account" class="btn-text danger">Delete Account</a>
+      <!-- Footer Actions -->
+      <div class="dashboard-footer">
+        <div class="footer-links">
+          <button id="export-data" class="footer-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Export Data
+          </button>
+          <span class="footer-divider">•</span>
+          <button id="delete-account" class="footer-link danger">
+            Delete Account
+          </button>
+        </div>
+        <p class="version">Orate v2.0</p>
       </div>
     </div>
   </div>

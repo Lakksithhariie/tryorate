@@ -1,5 +1,5 @@
 // popup.js - Extension popup script
-const API_BASE_URL = 'https://tryorate.vercel.app/api'; // Change to your Vercel URL
+const API_BASE_URL = 'https://tryorate.vercel.app/api';
 
 // DOM Elements
 const views = {
@@ -9,20 +9,29 @@ const views = {
 };
 
 const elements = {
+  // Auth
   emailInput: document.getElementById('email'),
   signinBtn: document.getElementById('signin-btn'),
-  authMessage: document.getElementById('auth-message'),
+  
+  // Main
   userEmail: document.getElementById('user-email'),
-  noProfile: document.getElementById('no-profile'),
-  hasProfile: document.getElementById('has-profile'),
+  noProfileState: document.getElementById('no-profile-state'),
+  hasProfileState: document.getElementById('has-profile-state'),
   profileSummary: document.getElementById('profile-summary-text'),
   profileMeta: document.getElementById('profile-meta'),
+  statSamples: document.getElementById('stat-samples'),
+  statWords: document.getElementById('stat-words'),
+  
+  // Buttons
   logoutBtn: document.getElementById('logout-btn'),
-  exportData: document.getElementById('export-data'),
-  deleteAccount: document.getElementById('delete-account'),
   gotoOnboarding: document.getElementById('goto-onboarding'),
   addSamplesBtn: document.getElementById('add-samples-btn'),
   rebuildProfileBtn: document.getElementById('rebuild-profile-btn'),
+  exportData: document.getElementById('export-data'),
+  deleteAccount: document.getElementById('delete-account'),
+  
+  // Toast
+  toastContainer: document.getElementById('toast-container'),
 };
 
 // State
@@ -31,7 +40,6 @@ let currentUser = null;
 
 // Initialize
 async function init() {
-  // Load auth token
   const result = await chrome.storage.local.get(['authToken']);
   authToken = result.authToken;
 
@@ -49,12 +57,38 @@ async function init() {
   elements.gotoOnboarding.addEventListener('click', openOnboarding);
   elements.addSamplesBtn.addEventListener('click', openOnboarding);
   elements.rebuildProfileBtn.addEventListener('click', rebuildProfile);
+  
+  // Enter key on email input
+  elements.emailInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleSignIn();
+  });
 }
 
 // View management
 function showView(viewName) {
   Object.values(views).forEach(view => view.classList.add('hidden'));
   views[viewName].classList.remove('hidden');
+}
+
+// Toast notifications
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const iconSvg = type === 'success' 
+    ? '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+    : type === 'error'
+    ? '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+    : '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  
+  toast.innerHTML = `${iconSvg}<span>${message}</span>`;
+  elements.toastContainer.appendChild(toast);
+  
+  // Auto-dismiss after 4 seconds (per PRD spec)
+  setTimeout(() => {
+    toast.classList.add('toast-out');
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }
 
 // API helper
@@ -85,11 +119,10 @@ async function loadUser() {
     showMainView();
   } catch (error) {
     console.error('Failed to load user:', error);
-    // Token expired or invalid
     await chrome.storage.local.remove(['authToken']);
     authToken = null;
     showView('auth');
-    showMessage('Session expired. Please sign in again.', 'error');
+    showToast('Session expired. Please sign in again.', 'error');
   }
 }
 
@@ -98,16 +131,41 @@ function showMainView() {
   elements.userEmail.textContent = currentUser.email;
   
   if (currentUser.voiceProfile) {
-    elements.noProfile.classList.add('hidden');
-    elements.hasProfile.classList.remove('hidden');
+    elements.noProfileState.classList.add('hidden');
+    elements.hasProfileState.classList.remove('hidden');
+    
+    // Update profile summary
     elements.profileSummary.textContent = currentUser.voiceProfile.summaryText || 'Your voice profile is ready.';
-    elements.profileMeta.textContent = `Last updated: ${new Date(currentUser.voiceProfile.updatedAt).toLocaleDateString()}`;
+    elements.profileMeta.textContent = `Updated ${new Date(currentUser.voiceProfile.updatedAt).toLocaleDateString()}`;
+    
+    // Load full profile for stats
+    loadProfileStats();
   } else {
-    elements.noProfile.classList.remove('hidden');
-    elements.hasProfile.classList.add('hidden');
+    elements.noProfileState.classList.remove('hidden');
+    elements.hasProfileState.classList.add('hidden');
   }
 
   showView('main');
+}
+
+// Load profile stats
+async function loadProfileStats() {
+  try {
+    const profile = await api('/profile');
+    elements.statSamples.textContent = profile.sampleCount || 0;
+    elements.statWords.textContent = profile.totalWords ? formatNumber(profile.totalWords) : 0;
+    
+    if (profile.summaryText) {
+      elements.profileSummary.textContent = profile.summaryText;
+    }
+  } catch (error) {
+    console.error('Failed to load profile stats:', error);
+  }
+}
+
+// Format number with commas
+function formatNumber(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 // Handle sign in
@@ -115,10 +173,15 @@ async function handleSignIn() {
   const email = elements.emailInput.value.trim();
   
   if (!email || !email.includes('@')) {
-    showMessage('Please enter a valid email address', 'error');
+    showToast('Please enter a valid email address', 'error');
     return;
   }
 
+  // Show loading state
+  elements.signinBtn.disabled = true;
+  elements.signinBtn.querySelector('.btn-text').classList.add('hidden');
+  elements.signinBtn.querySelector('.btn-loader').classList.remove('hidden');
+  
   showView('loading');
 
   try {
@@ -127,12 +190,15 @@ async function handleSignIn() {
       body: JSON.stringify({ email }),
     });
 
-    showView('auth');
-    showMessage('Magic link sent! Check your email.', 'success');
+    showToast('Magic link sent! Check your email.', 'success');
     elements.emailInput.value = '';
   } catch (error) {
     showView('auth');
-    showMessage(error.message, 'error');
+    showToast(error.message, 'error');
+  } finally {
+    elements.signinBtn.disabled = false;
+    elements.signinBtn.querySelector('.btn-text').classList.remove('hidden');
+    elements.signinBtn.querySelector('.btn-loader').classList.add('hidden');
   }
 }
 
@@ -142,6 +208,7 @@ async function handleLogout() {
   authToken = null;
   currentUser = null;
   showView('auth');
+  showToast('Signed out successfully', 'success');
 }
 
 // Handle data export
@@ -160,8 +227,10 @@ async function handleExport(e) {
       url,
       filename: `orate-export-${currentUser.id}.json`,
     });
+    
+    showToast('Data exported successfully', 'success');
   } catch (error) {
-    showMessage('Failed to export data', 'error');
+    showToast('Failed to export data', 'error');
   }
 }
 
@@ -169,50 +238,46 @@ async function handleExport(e) {
 async function handleDeleteAccount(e) {
   e.preventDefault();
   
-  if (!confirm('Are you sure you want to delete your account? This will permanently remove all your data.')) {
+  if (!confirm('Are you sure you want to delete your account? This will permanently remove all your data. This action cannot be undone.')) {
     return;
   }
 
   try {
     await api('/user/account', { method: 'DELETE' });
-    await handleLogout();
-    showMessage('Account deleted successfully', 'success');
+    await chrome.storage.local.remove(['authToken']);
+    authToken = null;
+    currentUser = null;
+    showView('auth');
+    showToast('Account deleted successfully', 'success');
   } catch (error) {
-    showMessage(error.message, 'error');
+    showToast(error.message, 'error');
   }
 }
 
 // Open onboarding page
 function openOnboarding(e) {
   e.preventDefault();
-  chrome.tabs.create({ url: `${API_BASE_URL.replace('/api', '')}/onboarding` });
+  chrome.tabs.create({ url: 'https://tryorate.vercel.app/welcome' });
 }
 
 // Rebuild profile
 async function rebuildProfile() {
-  elements.rebuildProfileBtn.disabled = true;
-  elements.rebuildProfileBtn.textContent = 'Building...';
+  const btn = elements.rebuildProfileBtn;
+  const originalText = btn.innerHTML;
+  
+  btn.disabled = true;
+  btn.innerHTML = `<span class="btn-loader" style="width: 14px; height: 14px; border-color: var(--text-secondary); border-top-color: transparent;"></span> Building...`;
 
   try {
     await api('/profile/build', { method: 'POST' });
-    await loadUser(); // Refresh to show updated profile
-    showMessage('Profile rebuilt successfully!', 'success');
+    await loadProfileStats();
+    showToast('Profile rebuilt successfully!', 'success');
   } catch (error) {
-    showMessage(error.message, 'error');
+    showToast(error.message, 'error');
   } finally {
-    elements.rebuildProfileBtn.disabled = false;
-    elements.rebuildProfileBtn.textContent = 'Rebuild Profile';
+    btn.disabled = false;
+    btn.innerHTML = originalText;
   }
-}
-
-// Show message in auth view
-function showMessage(text, type) {
-  elements.authMessage.textContent = text;
-  elements.authMessage.className = `message ${type}`;
-  setTimeout(() => {
-    elements.authMessage.className = 'message';
-    elements.authMessage.textContent = '';
-  }, 5000);
 }
 
 // Initialize when DOM is ready
