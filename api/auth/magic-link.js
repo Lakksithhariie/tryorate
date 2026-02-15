@@ -24,20 +24,20 @@ async function handler(req, res) {
     const { token, expiresAt } = generateMagicToken();
     console.log(`[Magic Link] Generated token for: ${email}`);
 
-    // Upsert user with magic token
-    try {
-      await prisma.user.upsert({
-        where: { email },
-        update: {
-          magicToken: token,
-          magicTokenExpires: expiresAt,
-        },
-        create: {
-          email,
-          magicToken: token,
-          magicTokenExpires: expiresAt,
-        },
-      });
+  // Upsert user with magic token
+  try {
+    await prisma.user.upsert({
+      where: { email },
+      update: {
+        magicToken: token,
+        magicTokenExpiresAt: expiresAt,
+      },
+      create: {
+        email,
+        magicToken: token,
+        magicTokenExpiresAt: expiresAt,
+      },
+    });
       console.log(`[Magic Link] User upserted: ${email}`);
     } catch (dbError) {
       console.error(`[Magic Link] Database error:`, dbError);

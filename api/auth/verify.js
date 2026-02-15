@@ -20,7 +20,7 @@ async function handler(req, res) {
   const user = await prisma.user.findFirst({
     where: {
       magicToken: token,
-      magicTokenExpires: {
+      magicTokenExpiresAt: {
         gt: new Date(),
       },
     },
@@ -41,7 +41,7 @@ async function handler(req, res) {
     where: { id: user.id },
     data: {
       magicToken: null,
-      magicTokenExpires: null,
+      magicTokenExpiresAt: null,
     },
   });
 
