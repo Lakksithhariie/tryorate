@@ -392,6 +392,10 @@ h3 {
   gap: var(--spacing-lg);
 }
 
+.profile-state.hidden {
+  display: none;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;
