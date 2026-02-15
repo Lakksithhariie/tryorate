@@ -1,15 +1,26 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
+  "buildCommand": null,
+  "devCommand": null,
   "framework": null,
-  "installCommand": "npm install",
+  "installCommand": "npm install && npx prisma generate",
+  "outputDirectory": null,
   "functions": {
     "api/**/*.js": {
       "maxDuration": 10
     }
   },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/api/health.js"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
